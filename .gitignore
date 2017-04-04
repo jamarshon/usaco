@@ -1,3 +1,6 @@
 *.exe
+*.in
+*.out
+*.txt
 usaco.sublime-project
 usaco.sublime-workspace
