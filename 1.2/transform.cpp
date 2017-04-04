@@ -85,7 +85,6 @@ int main() {
       }
     }
 
-    cout << "here" << endl;
     cout << tranformationId << endl;
     fout << tranformationId << endl;
 
