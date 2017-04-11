@@ -1,43 +1,41 @@
 #include <iostream>
-
+#include <deque>
 using namespace std;
 
-string getTidyNumber(string s) {
+string convert(string s, int k) {
 	int len = s.size();
-	int minIndex = -1;
-	char adjacentMinVal;
+	int i = 0;
+	int swaps = 0;
+	// array corresponding to number of swaps
+	deque<bool> A(len, false);
 
-	for(int i = 1; i < len; i++) {
-		if(s[i] - '0' < s[i-1] - '0') {
-			minIndex = i;
-			adjacentMinVal = s[i-1];
-			break;
+	bool currentParity = false;
+	for(int iLen = len - k + 1; i < iLen; i++) {
+		if(s[i] == '-' && !currentParity || s[i] == '+' && currentParity) {
+			A[i + k - 1] ^= true;
+			currentParity ^= true;
+			swaps++;
 		}
+
+		currentParity ^= A[i];
 	}
 
-	if(minIndex == -1) return s;
-
-	int maxIndex = minIndex - 1;
-	while(maxIndex >= 0 && s[maxIndex] == adjacentMinVal) maxIndex--;
-	maxIndex++;
-
-	s[maxIndex] = s[maxIndex] == '0' ? '9': s[maxIndex] - 1;
-	for(int i = maxIndex + 1; i < len; i++) {
-		s[i] = '9';
+	for(; i < len; i++) {
+		if(s[i] == '-' && !currentParity || s[i] == '+' && currentParity) return "IMPOSSIBLE";
+		currentParity ^= A[i];
 	}
-	int indFirstNonZero = s.find_first_not_of('0');
-	s.erase(0, min(indFirstNonZero, len-1));
-	
-	return s;
+
+	return to_string(swaps);
 }
 
+
 int main() {
-  int T;
-  string N;
+  int T, K;
+  string S;
   cin >> T; 
   for (int i = 1; i <= T; i++) {
-    cin >> N;
-    cout << "Case #" << i << ": " << getTidyNumber(N) << endl;
+    cin >> S >> K;
+    cout << "Case #" << i << ": " << convert(S, K) << endl;
   }
   return 0;
 }
