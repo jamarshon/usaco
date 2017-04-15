@@ -1,45 +1,62 @@
-/*
-ID: jasonl91
-PROG: skidesign
-LANG: C++11
-*/
 #include <iostream>
-#include <fstream>
-#include <cmath>
-#include <limits.h>
-
+#include <unordered_set>
+#include <unordered_map>
+#include <vector>
 using namespace std;
 
-#define TARGET_HEIGHT 17
-
 int main() {
-    // ofstream fout ("skidesign.out");
-    ifstream fin ("./1.3/skidesign.in");
+  int T, N;
+  cin >> T; 
+  for (int i = 1; i <= T; i++) {
+    cin >> N;
 
-    int N, hill;
+    int arr[N+1];
+    arr[0] = -1;
+    for (int j = 1; j <= N; j++) {
+        cin >> arr[j];
+        }
 
-    fin >> N;
+        // first is elem, second is cycle ended on, third is path length
+        unordered_map<int, pair<int, unordered_set<int>>> m;
+        for(int j = 1; j <= N; j++) {
+            int currentNode = j;
 
-    int hills[N];
-    for(int i = 0; i < N; i++) {
-    	fin >> hills[i];
-    }
+            unordered_set<int> s{currentNode};
 
-    int T = INT_MAX;
-    for(int j = 0; j < hills[N-1] - TARGET_HEIGHT + 1; j++) {
-    		int k = j + TARGET_HEIGHT;
-    		int a = 0;
-    		int e = 0;
-		    for(int i = 0; i < N; i++) {
-		    	if(hills[i] <= j) a += pow(j - hills[i], 2);
-		    	if(hills[i] >= k) e += pow(k - hills[i], 2);
+            while(s.find(arr[currentNode]) == s.end()) {
+                currentNode = arr[currentNode];
+                s.insert(currentNode);
+            }
 
-		    }
-		    T = min(T, a+e);
-    }
-    
-    cout << T << endl;
-    // fout << T << endl;
-    
-    return 0;
+            m[j] = make_pair(currentNode, s);
+        }
+
+        int maxPath = -1;
+        for(int j = 1; j <= N; j++) {
+            int cycleEnded = m[j].first;
+            int currentPath = m[j].second.size();
+            // Matching nodes so take the max of cycleEnded neighbors
+            if(arr[arr[cycleEnded]] == cycleEnded) {
+                int extention = 0;
+                for(auto it: m) {
+                    pair<int, unordered_set<int>> elem = it.second;
+                    if(elem.first == arr[cycleEnded]) {
+                        if(elem.second.size() > extention) {
+                            extention = elem.second.size();
+                        }
+                    }
+                }
+                cout << j << "e " << extention << endl;
+                currentPath += extention - 2;
+            }
+            maxPath = max(maxPath, currentPath);
+        }
+        for(auto it: m) {
+            cout << it.first << " " << it.second.first << " " << it.second.second.size() << endl;
+        }
+    cout << "Case #" << i << ": " << maxPath << endl;
+  }
+
+
+  return 0;
 }
