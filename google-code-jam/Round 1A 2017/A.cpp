@@ -49,32 +49,31 @@ int main() {
   		if(v[j][0] == '?') { // empty row
   			int rowToCopy = j;
   			int dj = 0;
-			bool foundRow = false;
-			while(j + dj < R && !foundRow) {
-				if(v[j + dj][0] != '?') {
-					rowToCopy = j + dj;
-					foundRow = true;
-				}
-				dj++;
-			}
+        bool foundRow = false;
+        while(j + dj < R && !foundRow) {
+  				if(v[j + dj][0] != '?') {
+  					rowToCopy = j + dj;
+  					foundRow = true;
+  				}
+  				dj++;
+  			}
 
-			dj = 0;
-			while(j - dj >= 0 && !foundRow) {
-				if(v[j - dj][0] != '?') {
-					rowToCopy = j - dj;
-					foundRow = true;
-				}
-				dj++;
-			}
-
-			v[j] = v[rowToCopy];
+  			dj = 0;
+  			while(j - dj >= 0 && !foundRow) {
+  				if(v[j - dj][0] != '?') {
+  					rowToCopy = j - dj;
+  					foundRow = true;
+  				}
+  				dj++;
+  			}
+        
+        v[j] = v[rowToCopy];
   		}
   	}
 
     cout << "Case #" << i << ": "<< endl;
   	for(auto s: v) cout << s << endl;
   }
-
 
   return 0;
 }
