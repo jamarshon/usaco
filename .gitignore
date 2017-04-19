@@ -2,5 +2,6 @@
 *.in
 *.out
 *.txt
+google-foobar/questions/
 usaco.sublime-project
 usaco.sublime-workspace
