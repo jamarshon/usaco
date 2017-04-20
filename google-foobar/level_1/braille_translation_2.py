@@ -1,4 +1,3 @@
-# braille_translation_2
 braille_space = '0'*6
 braille_capital = '6'
 braille_number = '3456'
