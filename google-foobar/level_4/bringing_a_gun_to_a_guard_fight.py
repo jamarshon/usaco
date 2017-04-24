@@ -15,15 +15,15 @@ def get_dist(p1, p2):
 def get_slope(p1, p2):
     dx = p1[0]-p2[0]
     dy = p1[1]-p2[1]
-    if is_equal(abs(dx), 0):
+    if dx == 0:
         prefix = 'up-' if dy > 0 else 'down-'
         return prefix + 'x=' + str(p1[0])
-    elif is_equal(abs(dy), 0):
+    elif dy == 0:
         prefix = 'right-' if dx > 0 else 'left-'
         return prefix + 'y=' + str(p1[1])
     else:
         prefix = 'right-' if dx > 0 else 'left-'
-        dgcd = fractions.gcd(dy, dx)
+        dgcd = abs(fractions.gcd(dy, dx))
         a = dy/dgcd
         b = dx/dgcd
         return prefix + str(a) + '/' + str(b)
