@@ -14,46 +14,53 @@ int main() {
     arr[0] = -1;
     for (int j = 1; j <= N; j++) {
         cin >> arr[j];
+    }
+
+    // first is elem, second is cycle ended on, third is path length
+    unordered_map<int, vector<int>> m;
+    for(int j = 1; j <= N; j++) {
+        int currentNode = j;
+
+        unordered_set<int> s{currentNode};
+        vector<int> v{currentNode};
+
+        while(s.find(arr[currentNode]) == s.end()) {
+            currentNode = arr[currentNode];
+            s.insert(currentNode);
+            v.push_back(currentNode);
         }
 
-        // first is elem, second is cycle ended on, third is path length
-        unordered_map<int, pair<int, unordered_set<int>>> m;
-        for(int j = 1; j <= N; j++) {
-            int currentNode = j;
+        m[j] = v;
+    }
 
-            unordered_set<int> s{currentNode};
-
-            while(s.find(arr[currentNode]) == s.end()) {
-                currentNode = arr[currentNode];
-                s.insert(currentNode);
-            }
-
-            m[j] = make_pair(currentNode, s);
-        }
-
-        int maxPath = -1;
-        for(int j = 1; j <= N; j++) {
-            int cycleEnded = m[j].first;
-            int currentPath = m[j].second.size();
-            // Matching nodes so take the max of cycleEnded neighbors
-            if(arr[arr[cycleEnded]] == cycleEnded) {
-                int extention = 0;
-                for(auto it: m) {
-                    pair<int, unordered_set<int>> elem = it.second;
-                    if(elem.first == arr[cycleEnded]) {
-                        if(elem.second.size() > extention) {
-                            extention = elem.second.size();
-                        }
-                    }
+    int maxPath = -1;
+    for(int j = 1; j <= N; j++) {
+        int cycleEnded = m[j].back();
+        int currentPath = m[j].size();
+        // Matching nodes so take the max of cycleEnded neighbors
+        bool endsOnMatchingNodes = arr[arr[cycleEnded]] == cycleEnded;
+        if(endsOnMatchingNodes) {
+            int extention = 0;
+            for(auto it: m) {
+                vector<int> path2 = it.second;
+                int path2Len = (int)path2.size();
+                if(path2[path2Len - 1] == arr[cycleEnded] && path2[path2Len - 2] == cycleEnded) {
+                    extention = max(extention, path2Len);
                 }
-                cout << j << "e " << extention << endl;
-                currentPath += extention - 2;
             }
+            currentPath += extention - 2;
+        }
+
+        // cout << "here" << cycleEnded << " " << arr[m[j][0]] << endl;
+        if(endsOnMatchingNodes || arr[cycleEnded] == m[j][0]) {
             maxPath = max(maxPath, currentPath);
         }
-        for(auto it: m) {
-            cout << it.first << " " << it.second.first << " " << it.second.second.size() << endl;
-        }
+    }
+    // for(auto it: m) {
+    //     cout << it.first << endl;
+    //     for(auto t: it.second) cout << t << " ";
+    //     cout << endl;
+    // }
     cout << "Case #" << i << ": " << maxPath << endl;
   }
 

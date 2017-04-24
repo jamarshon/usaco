@@ -1,49 +1,63 @@
-/*
-ID: jasonl91
-PROG: skidesign
-LANG: C++11
-*/
-#include <iostream>
-#include <fstream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <cmath>
+#include <cassert>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <queue>
+#include <set>
+#include <map>
+#include <utility>
+#include <numeric>
 #include <algorithm>
-#include <limits.h>
+#include <bitset>
+#include <complex>
+#include <array>
+#include <list>
+#include <stack>
+#include <valarray>
 
 using namespace std;
 
-#define TARGET_HEIGHT 17
+typedef unsigned uint;
+typedef long long Int;
+typedef unsigned long long UInt;
 
+const int INF = 1001001001;
+const Int INFLL = 1001001001001001001LL;
+
+template<typename T> void pv(T a, T b) { for (T i = a; i != b; ++i) cout << *i << " "; cout << endl; }
+template<typename T> void chmin(T& a, T b) { if (a > b) a = b; }
+template<typename T> void chmax(T& a, T b) { if (a < b) a = b; }
+int in() { int x; scanf("%d", &x); return x; }
+double fin() { double x; scanf("%lf", &x); return x; }
+Int lin() { Int x; scanf("%lld", &x); return x; }
+
+int K[1024], S[1024];
+
+void solve() {
+  int D = in();
+  int N = in();
+
+  double late = 0;
+  for (int i = 0; i < N; ++i) {
+    K[i] = in();
+    S[i] = in();
+    chmax(late, (D - K[i]) / double(S[i]));
+  }
+
+  printf("%.9f\n", D / late);
+}
 
 int main() {
-    // ofstream fout ("skidesign.out");
-    ifstream fin ("./1.3/skidesign.in");
+  int T = in();
 
-    int N, hill;
+  for (int CN = 1; CN <= T; ++CN) {
+    printf("Case #%d: ", CN);
+    solve();
+  }
 
-    fin >> N;
-
-    int hills[N];
-    for(int i = 0; i < N; i++) {
-        fin >> hills[i];
-    }
-
-    sort(hills, hills + N);
-
-    int T = INT_MAX;
-    for(int j = 0; j < hills[N-1] - 17 + 1; j++) {
-            int k = j + 17;
-            int a = 0;
-            int e = 0;
-            for(int i = 0; i < N; i++) {
-                if(hills[i] <= j) a += pow(j - hills[i], 2);
-                if(hills[i] >= k) e += pow(k - hills[i], 2);
-
-            }
-            if(a+e == 487881) cout << a << " " << e << " " << j << " " << k << endl;
-            T = min(T, a+e);
-    }
-    
-    cout << T << endl;
-    
-    return 0;
+  return 0;
 }
