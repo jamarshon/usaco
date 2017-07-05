@@ -5,22 +5,75 @@ LANG: C++11
 */
 #include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
+#include <set>
 
 using namespace std;
 
 struct Coord {
-	int x;
-	int y;
+    int x;
+    int y;
+    int paired;
 };
 
-int nCr(int n, int r) {
-	int numerator = 1;
-	int denominator = 1;
-	for(int i = n; i > n - r; i--) numerator *= i;
-	for(int i = r; i > 0; i--) denominator *= i;
-	return numerator/denominator;
+struct CompareWormHole {
+    bool operator()(const pair<int, int>& p1, const pair<int, int>& p2) const {
+        return p1.first < p2.first;
+    }
+};
+
+bool IsCycle(Coord wormholes [], int N, unordered_map<int, set<pair<int, int>, CompareWormHole>>& m) {
+    for(int i = 0; i < N; i++) {
+        int curr = i;
+        unordered_set<int> visited;
+        visited.insert(curr);
+
+        while(true) {
+            int paired = wormholes[curr].paired;
+
+            set<pair<int, int>, CompareWormHole> on_a_line = m[wormholes[paired].y];
+            auto right = on_a_line.upper_bound({wormholes[paired].x, 0});
+
+            if(right == on_a_line.end()) break; // nothing right of this so we're done
+            int right_neighbor = right -> second;
+
+            if(visited.count(right_neighbor)) return true; // visit same cell
+            visited.insert(right_neighbor);
+
+            curr = right_neighbor;
+        }
+    }
+
+    return false;
+}
+
+int GetPairings(Coord wormholes[], int N, unordered_map<int, set<pair<int, int>, CompareWormHole>>& m) {
+    int i = 0;
+    for(; i < N; i++) {
+        if(wormholes[i].paired == -1) break;
+    }
+
+    if(i == N) { 
+        bool is_cycle = IsCycle(wormholes, N, m); // everything is paired so just check cycle
+        return is_cycle;
+    }
+
+    int count = 0;
+    for(int j = i + 1; j < N; j++) {
+        if(wormholes[j].paired != -1) continue;
+        // pair i and j
+        wormholes[j].paired = i;
+        wormholes[i].paired = j;
+
+        // see if cycle exists
+        count += GetPairings(wormholes, N, m);
+
+        // reset variables
+        wormholes[i].paired = wormholes[j].paired = -1;
+    }
+
+    return count;
 }
 
 int main() {
@@ -32,38 +85,19 @@ int main() {
     fin >> N;
 
     Coord wormholes[N];
-    unordered_map<int, int> m;
 
     int x, y;
     for(int i = 0; i < N; i++) {
     	fin >> x >> y;
-        if(m.find(x) == m.end()) {
-            m[x] = 1;
-        } else {
-            m[x]++;
-        }
-    	wormholes[i] = {x, y};
+    	wormholes[i] = {x, y, -1};
     }
 
-    int count = 0;
-    for(pair<int, int> it : m) {
-        cout << it.second << endl;
-        count += it.second;
+    // key is y coordinate and value is all the x coordinates
+    unordered_map<int, set<pair<int, int>, CompareWormHole>> m;
+    for(int i = 0; i < N; i++) {
+        m[wormholes[i].y].insert({wormholes[i].x, i});
     }
 
-    cout << count << endl;
-    // int remainingPairs = nCr(N-2, 2);
-    // Infinite cycle exists if there is a wormhole pairing that has the same x coordinates
-    // sort(wormholes, wormholes + N, [](Coord a, Coord b){ return a.x < b.x; });
-    // for(int i = 0; i < N - 1; i++) {
-    	// if(wormholes[i].x == wormholes[i + 1].x) {
-    		// this pair is a cycle find how many different ways we can pair the others
-    		// remainingPairs - 
-
-    	// }
-    	// cout << wormholes[i].x << " " << wormholes[i].y << endl;
-    // }
-
-    // cout << nCr(7,2) << endl;
+    fout << GetPairings(wormholes, N, m) << endl;
     return 0;
 }
