@@ -1,0 +1,1 @@
+$('.challenge-text').text()
